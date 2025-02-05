@@ -1,0 +1,174 @@
+<html>
+<head>
+  <title>3D Horror Maze - Smiley Chase</title>
+  <style>
+    body { 
+      margin: 0; 
+      font-family: monospace;
+      overflow: hidden;
+    }
+    canvas { 
+      display: block; 
+    }
+    #ui {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      color: #ff0000;
+      font-size: 20px;
+      text-shadow: 2px 2px 2px black;
+      pointer-events: none;
+      display: none;
+    }
+    .crosshair {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      transform: translate(-50%, -50%);
+      color: #ff0000;
+      font-size: 20px;
+      pointer-events: none;
+      display: none;
+    }
+    #instructions {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      border-radius: 10px;
+      color: #fff;
+      z-index: 1000;
+      display: none;
+    }
+    #instructions h1 {
+      color: #ff0000;
+    }
+    #instructions.hidden {
+      display: none;
+    }
+    #ambientAudio {
+      display: none;
+    }
+    #gameOverOverlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2000;
+    }
+    #staticBackground {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    #gameOverSmiley {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
+      height: 200px;
+      animation: shake 0.1s infinite;
+    }
+    @keyframes shake {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      25% { transform: translate(-52%, -48%) rotate(-5deg); }
+      50% { transform: translate(-50%, -52%) rotate(0deg); }
+      75% { transform: translate(-48%, -48%) rotate(5deg); }
+      100% { transform: translate(-50%, -50%) rotate(0deg); }
+    }
+    #mainMenu {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 3000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    #mainMenu h1 {
+      color: #ff0000;
+      font-size: 48px;
+      text-shadow: 3px 3px 5px black;
+      margin-bottom: 30px;
+      z-index: 1;
+    }
+    #playButton {
+      padding: 15px 40px;
+      font-size: 24px;
+      background: #ff0000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.2s;
+      z-index: 1;
+      font-family: monospace;
+    }
+    #playButton:hover {
+      transform: scale(1.1);
+      background: #cc0000;
+    }
+    #game {
+      display: none;
+    }
+    #objective {
+      position: fixed;
+      top: 40px;
+      left: 10px;
+      color: #ffffff;
+      font-size: 20px;
+      text-shadow: 2px 2px 2px black;
+      pointer-events: none;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="mainMenu">
+    <img id="staticBackground" src="static.gif" alt="static">
+    <h1>Smiley's Maze :)</h1>
+    <button id="playButton">PLAY</button>
+  </div>
+
+  <div id="game">
+    <audio id="ambientAudio" loop>
+      <source src="horror-ambience-17601.mp3" type="audio/mp3">
+    </audio>
+    <audio id="jumpscareAudio">
+      <source src="fnaf-6-jumpscare-sound-effect.mp3" type="audio/mp3">
+    </audio>
+    <div id="ui">Sanity: <span id="sanity">100</span>%</div>
+    <div class="crosshair">+</div>
+    <div id="instructions">
+      <h1>Horror Maze - Smiley Chase</h1>
+      <p>Click to play</p>
+      <p>
+        WASD or Arrow Keys to move<br>
+        Mouse to look around<br>
+        ESC to pause<br>
+        Avoid the smiley - it gets faster as your sanity drops!
+      </p>
+    </div>
+    <div id="objective"></div>
+    <div id="gameOverOverlay">
+      <img id="staticBackground" src="static.gif" alt="static">
+      <img id="gameOverSmiley" src="smiley.png" alt="smiley">
+    </div>
+  </div>
+  <script type="module" src="game.js"></script>
+</body>
+</html>
