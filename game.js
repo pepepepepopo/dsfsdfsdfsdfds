@@ -178,12 +178,28 @@ class HorrorMaze {
     ceiling.position.y = 3;
     this.scene.add(ceiling);
 
+    // Create boundary walls
+    const boundaryWalls = [
+      { pos: [-mazeSize, 1.5, 0], scale: [2, 3, mazeSize * 2] },  // Left wall
+      { pos: [mazeSize, 1.5, 0], scale: [2, 3, mazeSize * 2] },   // Right wall
+      { pos: [0, 1.5, -mazeSize], scale: [mazeSize * 2, 3, 2] },  // Front wall
+      { pos: [0, 1.5, mazeSize], scale: [mazeSize * 2, 3, 2] }    // Back wall
+    ];
+
+    boundaryWalls.forEach(wall => {
+      const boundaryWall = new THREE.Mesh(wallGeometry, wallMaterial);
+      boundaryWall.position.set(...wall.pos);
+      boundaryWall.scale.set(...wall.scale);
+      this.scene.add(boundaryWall);
+      this.walls.push(boundaryWall);
+    });
+
     // Create maze walls
     for (let i = 0; i < mazeSize; i++) {
       for (let j = 0; j < mazeSize; j++) {
         if (Math.random() < 0.3) {
           const wall = new THREE.Mesh(wallGeometry, wallMaterial);
-          wall.position.set(i * 2 - mazeSize, 1.5, j * 2 - mazeSize);
+          wall.position.set(i * 2 - mazeSize + 2, 1.5, j * 2 - mazeSize + 2);
           this.scene.add(wall);
           this.walls.push(wall);
         }
@@ -194,7 +210,8 @@ class HorrorMaze {
     this.walls = this.walls.filter(wall => {
       const distanceFromStart = wall.position.distanceTo(new THREE.Vector3(2, 1.6, 2));
       const distanceFromMonsterSpawn = wall.position.distanceTo(new THREE.Vector3(-18, 1.5, -18));
-      return distanceFromStart > 3 && distanceFromMonsterSpawn > 3;
+      return (distanceFromStart > 3 && distanceFromMonsterSpawn > 3) || 
+             wall.scale.x > 2 || wall.scale.z > 2; // Keep boundary walls
     });
   }
 
@@ -415,10 +432,22 @@ class HorrorMaze {
     this.controls.moveRight(-this.velocity.x * delta);
     this.controls.moveForward(-this.velocity.z * delta);
 
+    // Check boundaries and collisions
+    const mazeSize = 20;
+    const boundaryLimit = mazeSize - 1;
     const playerRadius = 0.5;
+
+    // Check if player is trying to go out of bounds
+    if (Math.abs(this.camera.position.x) > boundaryLimit || 
+        Math.abs(this.camera.position.z) > boundaryLimit) {
+      this.camera.position.copy(oldPosition);
+    }
+
+    // Check wall collisions
     for (const wall of this.walls) {
       const distance = this.camera.position.distanceTo(wall.position);
-      if (distance < playerRadius + 1) {
+      const collisionRadius = playerRadius + (wall.scale.x > 2 || wall.scale.z > 2 ? 1.5 : 1);
+      if (distance < collisionRadius) {
         this.camera.position.copy(oldPosition);
         break;
       }
